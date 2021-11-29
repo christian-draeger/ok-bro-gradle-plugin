@@ -4,19 +4,23 @@
 package tech.draeger
 
 import org.gradle.testfixtures.ProjectBuilder
-import kotlin.test.Test
-import kotlin.test.assertNotNull
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.isNotNull
 
 /**
- * A simple unit test for the 'tech.draeger.greeting' plugin.
+ * A simple unit test for the 'tech.draeger.ok-bro' plugin.
  */
 class OkBroPluginTest {
-    @Test fun `plugin registers task`() {
+    @Test
+    @Disabled
+    fun `plugin registers task`() {
         // Create a test project and apply the plugin
         val project = ProjectBuilder.builder().build()
-        project.plugins.apply("tech.draeger.greeting")
+        project.plugins.apply("tech.draeger.ok-bro")
 
         // Verify the result
-        assertNotNull(project.tasks.findByName("greeting"))
+        expectThat(project.tasks.findByName("heyBro")).isNotNull()
     }
 }

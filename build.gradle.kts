@@ -1,22 +1,35 @@
 plugins {
     `java-gradle-plugin`
-    id("org.jetbrains.kotlin.jvm") version "1.4.32"
+    id("org.jetbrains.kotlin.jvm") version "1.6.0"
+    id("maven-publish")
+    id("com.gradle.plugin-publish") version "0.14.0"
+    id("com.adarshr.test-logger") version "3.1.0"
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
+    maven {
+        url = uri("https://plugins.gradle.org/m2/")
+    }
 }
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+
+    // third party plugins we want to be propergated to users of ok-bro
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.0")
+    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.19.0")
+    implementation("com.adarshr:gradle-test-logger-plugin:3.1.0")
+    implementation("com.github.ben-manes:gradle-versions-plugin:0.38.0")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
+    testImplementation("io.strikt:strikt-core:0.33.0")
 }
 
 gradlePlugin {
-    val greeting by plugins.creating {
-        id = "tech.draeger.greeting"
+    val okBro by plugins.creating {
+        id = "tech.draeger.ok-bro"
         implementationClass = "tech.draeger.OkBroPlugin"
     }
 }
@@ -26,11 +39,17 @@ val functionalTestSourceSet = sourceSets.create("functionalTest") {}
 gradlePlugin.testSourceSets(functionalTestSourceSet)
 configurations.getByName("functionalTestImplementation").extendsFrom(configurations.getByName("testImplementation"))
 
-val functionalTest by tasks.creating(Test::class) {
-    testClassesDirs = functionalTestSourceSet.output.classesDirs
-    classpath = functionalTestSourceSet.runtimeClasspath
-}
+tasks {
+    withType<Test> {
+        useJUnitPlatform()
+    }
 
-val check by tasks.getting(Task::class) {
-    dependsOn(functionalTest)
+    val functionalTest by creating(Test::class) {
+        testClassesDirs = functionalTestSourceSet.output.classesDirs
+        classpath = functionalTestSourceSet.runtimeClasspath
+    }
+
+    val check by getting(Task::class) {
+        dependsOn(functionalTest)
+    }
 }
