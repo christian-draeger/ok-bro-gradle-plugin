@@ -3,4 +3,7 @@
 # OK BRO
 ## <u>O</u>pinionated <u>K</u>otlin <u>B</u>uildscript and <u>R</u>uleset with <u>O</u>pt-outs
 
-A Gradle plugin to configure projects in a convenient fashion.
+A Gradle convention plugin to cut down project configuration boilerplate in consuming projects.
+
+### How to use
+tbd
