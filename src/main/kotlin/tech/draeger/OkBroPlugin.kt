@@ -1,5 +1,6 @@
 package tech.draeger
 
+import com.adarshr.gradle.testlogger.TestLoggerExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ObjectConfigurationAction
@@ -17,6 +18,13 @@ class OkBroPlugin : Plugin<Project> {
                 action.plugin("org.jetbrains.kotlin.jvm")
                 action.plugin("com.adarshr.test-logger")
                 action.plugin("com.github.ben-manes.versions")
+            }
+
+            extensions.run {
+                configure(TestLoggerExtension::class.java) {
+                    it.setTheme("mocha-parallel")
+                    it.slowThreshold = 1000
+                }
             }
 
             afterEvaluate {
