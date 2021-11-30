@@ -3,8 +3,6 @@
  */
 package tech.draeger
 
-import java.io.File
-import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.contains
@@ -15,26 +13,29 @@ import strikt.assertions.contains
 class OkBroPluginFunctionalTest {
     @Test
     fun `can run task`() {
-        // Setup the test build
-        val projectDir = File("build/functionalTest")
-        projectDir.mkdirs()
-        projectDir.resolve("settings.gradle").writeText("")
-        projectDir.resolve("build.gradle").writeText("""
-            plugins {
-                id('tech.draeger.ok-bro')
-            }
-        """)
+        val result = createTestBuild(
+            buildGradle = """
+                plugins {
+                    id('tech.draeger.ok-bro')
+                }
+            """
+        ).runTask("heyBro")
 
-        // Run the build
-        val runner = GradleRunner.create()
-        runner.forwardOutput()
-        runner.withPluginClasspath()
-
-        runner.withArguments("heyBro")
-        runner.withProjectDir(projectDir)
-        val result = runner.build();
-
-        // Verify the result
         expectThat(result.output).contains("Hello from task")
+    }
+
+    @Test
+    fun `dependencyUpdates task is available`() {
+
+        val result = createTestBuild(
+            buildGradle = """
+                plugins {
+                    id('tech.draeger.ok-bro')
+                }
+            """
+        ).runTask("dependencyUpdates")
+
+        expectThat(result.output).contains("Project Dependency Updates (report to plain text file)")
+
     }
 }
